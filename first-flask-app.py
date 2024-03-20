@@ -1,35 +1,11 @@
 from flask import Flask, request
 
+from model import *
+
+from uuid import uuid4
+
 app = Flask(__name__)
 
-#the details/model of the flask app
-ps_console_generation = {
-    1 : {
-        'name' : 'PlayStation',
-        'price' : 399,
-        'global-release-date' : 1995
-    },
-    2 : {
-        'name' : 'PlayStation 2',
-        'price' : 299,
-        'global-release-date' : 2000
-    },
-    3 : {
-        'name' : 'PlayStation 3',
-        'price' : 499,
-        'global-release-date' : 2006
-    },
-    4 : {
-        'name' : 'PlayStation 4',
-        'price' : 400,
-        'global-release-date' : 2013
-    },
-    5 : {
-        'name' : 'PlayStation 5',
-        'price' : 500,
-        'global-release-date' : 2020
-    }
-}
 
 #homepage - view
 @app.route('/')
@@ -101,5 +77,78 @@ def delete():
     return {
         'error' : 'There is no console generation of that name.'
     }
+
+################################################################################ Second Resource ################################################################################
+#[GET] - grabs the information of the cards
+@app.get('/ygo')
+def get_card():
+    try:
+        return list(fav_ygo_cards.values()), 200
+    except:
+        return {'error' : 'Failed to gather card information'}, 400
+    
+#[POST] - creates information and puts it in the cards    
+@app.post('/ygo')
+def create_card():
+    data = request.get_json()
+    #v Checks if the new card matches names with any other pre-existing card v
+    if data['name'] in fav_ygo_cards:
+        #v Returns with error if it matches v
+        return {'error', 'card with that name already exists'}, 400
+    
+    #creates unique id
+    card_id = uuid4().hex
+    #puts the new card in the object at the new id position
+    fav_ygo_cards[card_id] = data
+    #notifies the user the card is created
+    return {'message' : 'Card successfully created',
+            'card-id' : card_id}, 200
+
+#[PUT] - finds card and updates it
+@app.put('/ygo')
+def update_card():
+    data = request.get_json()
+
+    #creates list of the card names
+    card_names = [i['name'] for i in fav_ygo_cards.values()]
+
+    update_key = None
+    #finds the key that matches the name of the name in the PUT request
+    for key, value in fav_ygo_cards.items():
+        if value['name'] == data['name']:
+            update_key = key
+            break
+
+    #checks if the sent object exists in the object
+    if data['name'] in card_names:
+        #assigns the new information over it if it does
+        fav_ygo_cards[update_key] = data
+        #notifies of the change
+        return{'message' : f'card: {data["name"]} updated.'}, 201
+    #outputs error if the update doesn't match to something
+    return {'error' : 'No card with that name exists'}, 400
+
+#[DELETE] - finds card and deletes it
+@app.delete('/ygo')
+def delete_card():
+    data = request.get_json()
+    card_id = data['name']
+
+    #creates list of the card names
+    card_names = [i['name'] for i in fav_ygo_cards.values()]
+
+    update_key = None
+    #finds the key that matches the name of the name in the PUT request
+    for key, value in fav_ygo_cards.items():
+        if value['name'] == data['name']:
+            update_key = key
+            break
+
+    #checks if the requested card exists
+    if data['name'] in card_names:
+        #deletes the card it asks for if it does
+        del fav_ygo_cards[update_key]
+        return {'Card found' : f'Card: {card_id} deleted successfully.'}
+    return {'error' : 'A card of the given details doesn\'t exist.'}
 
 app.run()

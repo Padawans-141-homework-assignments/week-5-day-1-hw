@@ -21,83 +21,94 @@ catapult_turtle = """Once per turn: You can Tribute 1 monster; inflict damage to
 #first resource
 ps_console_generation = {
     1 : {
+        'id' : 1,
         'name' : 'PlayStation',
         'price' : 399,
-        'global-release-date' : 1995
+        'global_release_date' : 1995
     },
     2 : {
+        'id' : 2,
         'name' : 'PlayStation 2',
         'price' : 299,
-        'global-release-date' : 2000
+        'global_release_date' : 2000
     },
     3 : {
+        'id' : 3,
         'name' : 'PlayStation 3',
         'price' : 499,
-        'global-release-date' : 2006
+        'global_release_date' : 2006
     },
     4 : {
+        'id' : 4,
         'name' : 'PlayStation 4',
         'price' : 400,
-        'global-release-date' : 2013
+        'global_release_date' : 2013
     },
     5 : {
+        'id' : 5,
         'name' : 'PlayStation 5',
         'price' : 500,
-        'global-release-date' : 2020
+        'global_release_date' : 2020
     }
 }
 
 #second resource
 fav_ygo_cards = {
     1: {
+        'id' : 1,
         'name' : 'Super Quantal Mech King Great Magnus',
         'attribute': 'LIGHT',
         'level/rank/link rating' : 12,
         'type' : 'Machine',
-        'card type' : 'Xyz/Effect',
+        'card_type' : 'Xyz/Effect',
         'summon requirement' : '3 Level 12 monsters',
         'ATK' : 3600,
         'DEF' : 3200,
         'effect' : super_quant_mech_king_great_magnus
     },
     2: {
+        'id' : 2,
         'name': 'The Arrival Cyberse @Ignister',
         'attribute' : 'DARK',
         'level/rank/link rating': 6,
         'type' : 'Cyberse',
-        'card type' : 'Link/Effect',
+        'card_type' : 'Link/Effect',
         'summon requirement' : '3+ monsters with different attributes',
         'ATK' : 0,
         'effect' : the_arrival_cyberse_at_ignister
     },
     3: {
+        'id' : 3,
         'name' : 'Koa\'ki Meiru Maximus',
         'attribute' : 'WIND',
         'level/rank/link rating': 8,
         'type' : 'Dragon',
-        'card type' : 'Effect',
+        'card_type' : 'Effect',
         'ATK' : 3000,
         'DEF' : 2500,
         'effect' : koaki_meiru_maximus
     },
     4: {
+        'id' : 4,
         'name' : 'Miscellaneousaurus',
         'attribute' : 'FIRE',
         'level/rank/link rating' : 4,
         'type' : 'Dinosaur',
-        'card type' : 'Effect',
+        'card_type' : 'Effect',
         'ATK' : 1800,
         'DEF' : 1000,
         'effect' : miscellaneousaurus
     },
     5: {
+        'id' : 5,
         'name' : 'Catapult Turtle',
         'attribute' : 'WATER',
         'level/rank/link rating' : 5,
         'type' : 'Aqua',
-        'card type' : 'Effect',
+        'card_type' : 'Effect',
         'ATK' : 1000,
         'DEF' : 2000,
         'effect' : catapult_turtle
     }
 }
+

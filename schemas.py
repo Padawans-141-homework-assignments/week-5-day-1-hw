@@ -15,7 +15,8 @@ class ygoSchema(Schema):
     level_rank_link_rating = fields.Int(required=True)
     type = fields.Str(required=True)
     card_type = fields.Str(required=True)
-    summon_requirement = fields.Str()
-    ATK = fields.Int(required=True)
-    DEF = fields.Int()
+    atk = fields.Int(required=True)
     effect = fields.Str(required=True)
+    
+    summon_requirement = fields.Str(required=False)
+    defense = fields.Int(required=False)

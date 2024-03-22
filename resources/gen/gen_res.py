@@ -1,23 +1,25 @@
 from flask.views import MethodView
+from flask_smorest import abort
 
+from models.gen_model import gen_Model
 from schemas import genSchema
 from . import bpgen
-from model import ps_console_generation
 
 #creates route for the new class
 @bpgen.route('/gen')
 class genResourceList(MethodView):
-    
+
     #converts objects into a JSON response
     @bpgen.response(200, genSchema(many=True))
     #GET for the generations resource
     def get(self):
-        #try to grab a list of the values
+        #returns a query of everthing in the current database
         try:
-            return list(ps_console_generation.values())
-        #spit out error if there is none
+            return gen_Model.query.all()
+        #informs of error if needed
         except:
-            return {'err':'no dictionary could be found'}
+            abort(400, message = 'Couldn\'t return the information from the database')
+    
     
     #converts objects into a JSON argument to be passed into the method
     @bpgen.arguments(genSchema)
@@ -26,14 +28,16 @@ class genResourceList(MethodView):
     def post(self, data):
 
         try:
-            #adds the new data into the dictionary
-            ps_console_generation[data["name"]] = data
+            #grants the user of the model for the generations class
+            gen_layout = gen_Model()
+            #forms the passed in data
+            gen_layout.from_gen(data)
+            #saves the data from above into the database
+            gen_layout.save_gen()
+            return {'Confirmation' : 'Your data was successfully entered into the database'}
         except:
-            #returns error if it happens
-            return {'error' : 'problem adding new requsest to the dictionary'}
-        
-        #returns success
-        return {'Information added successfully' : f'{ps_console_generation[data["name"]]}'}
+            #informs if an error shows up
+            abort(400, message = 'There was a problem entering the information into the database.')
         
         
 @bpgen.route('/gen/<int:id>')
@@ -44,28 +48,33 @@ class genResource(MethodView):
     #PUT for the generations resource
     def put(self, data, id):
 
-        #if the given endpoint is in the dictionary
-        if id in ps_console_generation:
-            #assign the given endpoint to the new data
-            ps_console_generation[id] = data
-            #return confirmation of update
-            return{'confirmation' : f'Data: {ps_console_generation[id]} added successfully.'}
-        else:
-            #return confirmation of user error
-            return {'error': 'provided enpoint id doesn\'t exist in the dictionary.'}
+        #uses the model to query the database for the given id
+        user = gen_Model.query.get(id)
+
+        try:
+            #forms the passed in data
+            user.from_gen(data)
+            #saves the passed in data to the database
+            user.save_gen()
+            return {"Confirmation" : "user has been updated successfully"}
+        except:
+            #informs if an error shows up
+            abort(400, message = 'There is no user with that id in the database.')
+
     
     #@bpgen.arguments(genSchema)
     def delete(self,id):
 
-        #if the given id endpoint exists in the dictionary
-        if id in ps_console_generation:
-            #keep track of the to be deleted info
-            deleted_id_info = ps_console_generation[id]
-            #deletes the info at the given id
-            del ps_console_generation[id]
-            #returns confirmation of deletion
-            return {'Confirmation' : f'Info: {deleted_id_info} deleted successfully.'}
+        #querys the database at the given id location
+        user = gen_Model.query.get(id)
+
+        #if something exists at that id endpoint
+        if user:
+            #delete the contents at that location
+            user.del_gen()
+            return {'Confirmation' : 'User is now deleted from the database.'}
         else:
-            #return confirmation of user error
-            return {'error' : 'Specified endpoint id doesn\'t exist.'}
+            #else inform the user of an error
+            abort(400, message = 'User with that ID not found in the database')
+
         

@@ -1,6 +1,8 @@
-from model import fav_ygo_cards
+from models.ygo_model import ygo_Model
 
 from flask.views import MethodView
+
+from flask_smorest import abort
 
 from schemas import ygoSchema
 
@@ -13,27 +15,31 @@ class ygoResourceList(MethodView):
     @bpygo.response(200, ygoSchema(many=True))
     #GET for the generations resource
     def get(self):
-        #try to grab a list of the values
+
+        #returns a query of everthing in the current database
         try:
-            return list(fav_ygo_cards.values())
-        #spit out error if there is none
+            return ygo_Model.query.all()
+        #informs of error if needed
         except:
-            return {'err':'no dictionary could be found'}
+            abort(400, message = 'Couldn\'t return the information from the database')
     
     #converts objects into a JSON argument to be passed into the method
     @bpygo.arguments(ygoSchema)
     @bpygo.response(201, ygoSchema)
     #POST for the generations resource
     def post(self, data):
+
         try:
-            #adds the new data into the dictionary
-            fav_ygo_cards[data["name"]] = data
+            #grants the user of the model for the generations class
+            gen_layout = ygo_Model()
+            #forms the passed in data
+            gen_layout.from_ygo(data)
+            #saves the data from above into the database
+            gen_layout.save_ygo()
+            return {'Confirmation' : 'Your data was successfully entered into the database'}
         except:
-            #returns error if it happens
-            return {'error' : 'problem adding new requsest to the dictionary'}
-        
-        #returns success
-        return {'Information added successfully' : f'{fav_ygo_cards[data["name"]]}'}
+            #informs if an error shows up
+            abort(400, message = 'There was a problem entering the information into the database.')
     
 @bpygo.route('/ygo/<int:id>')
 class ygoResource(MethodView):
@@ -42,26 +48,31 @@ class ygoResource(MethodView):
     @bpygo.arguments(ygoSchema)
     #PUT for the generations resource
     def put(self, data, id):
-        #if the given endpoint is in the dictionary
-        if id in fav_ygo_cards:
-            #assign the given endpoint to the new data
-            fav_ygo_cards[id] = data
-            #return confirmation of update
-            return{'confirmation' : f'Data: {fav_ygo_cards[id]} added successfully.'}
-        else:
-            #return confirmation of user error
-            return {'error': 'provided enpoint id doesn\'t exist in the dictionary.'}
+
+        #uses the model to query the database for the given id
+        user = ygo_Model.query.get(id)
+
+        try:
+            #forms the passed in data
+            user.from_ygo(data)
+            #saves the passed in data to the database
+            user.save_ygo()
+            return {"Confirmation" : "user has been updated successfully"}
+        except:
+            #informs if an error shows up
+            abort(400, message = 'There is no user with that id in the database.')
     
     #@bpgen.arguments(genSchema)
     def delete(self,id):
-        #if the given id endpoint exists in the dictionary
-        if id in fav_ygo_cards:
-            #keep track of the to be deleted info
-            deleted_id_info = fav_ygo_cards[id]
-            #deletes the info at the given id
-            del fav_ygo_cards[id]
-            #returns confirmation of deletion
-            return {'Confirmation' : f'Info: {deleted_id_info} deleted successfully.'}
+
+        #querys the database at the given id location
+        user = ygo_Model.query.get(id)
+
+        #if something exists at that id endpoint
+        if user:
+            #delete the contents at that location
+            user.del_ygo()
+            return {'Confirmation' : 'User is now deleted from the database.'}
         else:
-            #return confirmation of user error
-            return {'error' : 'Specified endpoint id doesn\'t exist.'}
+            #else inform the user of an error
+            abort(400, message = 'User with that ID not found in the database')

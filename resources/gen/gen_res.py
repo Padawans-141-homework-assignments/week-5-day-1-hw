@@ -1,5 +1,4 @@
 from flask.views import MethodView
-from uuid import uuid4
 
 from schemas import genSchema
 from . import bpgen

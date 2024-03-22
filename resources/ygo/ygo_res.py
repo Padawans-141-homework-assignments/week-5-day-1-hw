@@ -2,8 +2,6 @@ from model import fav_ygo_cards
 
 from flask.views import MethodView
 
-from uuid import uuid4
-
 from schemas import ygoSchema
 
 from . import bpygo

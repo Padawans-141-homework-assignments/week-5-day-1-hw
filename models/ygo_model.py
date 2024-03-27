@@ -7,7 +7,7 @@ class ygo_Model(db.Model):
     __tablename__ = 'fav_cards'
 
     #sets the outline for the database table
-    id = db.Column(db.Integer, primary_key = True)
+    db_id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(42), nullable = False, unique = True) #unique
     effect = db.Column(db.String, nullable = False, unique = True) #unique
     attribute = db.Column(db.String(9), nullable = False)

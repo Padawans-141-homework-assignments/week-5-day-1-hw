@@ -7,7 +7,7 @@ class gen_Model(db.Model):
     __tablename__ = 'ps_generations'
 
     #sets the outline for the database
-    id = db.Column(db.Integer, primary_key = True)
+    db_id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(25), nullable = False, unique = True)
     price = db.Column(db.Integer, nullable = False)
     global_release_date = db.Column(db.Integer, nullable = False, unique = False)

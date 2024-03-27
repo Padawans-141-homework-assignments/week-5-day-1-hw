@@ -1,5 +1,6 @@
 from flask.views import MethodView
 from flask_smorest import abort
+from flask_jwt_extended import jwt_required
 
 from models.gen_model import gen_Model
 from schemas import genSchema
@@ -20,7 +21,8 @@ class genResourceList(MethodView):
         except:
             abort(400, message = 'Couldn\'t return the information from the database')
     
-    
+    #requires the user JWT to add a console generation
+    @jwt_required()
     #converts objects into a JSON argument to be passed into the method
     @bpgen.arguments(genSchema)
     @bpgen.response(201, genSchema)
@@ -43,6 +45,8 @@ class genResourceList(MethodView):
 @bpgen.route('/gen/<int:id>')
 class genResource(MethodView):
     
+    #requires the user JWT to update a console generation
+    @jwt_required()
     #creates another object to be placed into the method as an argument
     @bpgen.arguments(genSchema)
     #PUT for the generations resource
@@ -56,13 +60,14 @@ class genResource(MethodView):
             user.from_gen(data)
             #saves the passed in data to the database
             user.save_gen()
-            return {"Confirmation" : "user has been updated successfully"}
+            return {"Confirmation" : "console generation has been updated successfully"}
         except:
             #informs if an error shows up
-            abort(400, message = 'There is no user with that id in the database.')
+            abort(400, message = 'There is no console with that id in the database.')
 
-    
-    #@bpgen.arguments(genSchema)
+    #requires user JWT to delete console generation
+    @jwt_required()
+    #DELETE for the generations resource
     def delete(self,id):
 
         #querys the database at the given id location
@@ -72,9 +77,9 @@ class genResource(MethodView):
         if user:
             #delete the contents at that location
             user.del_gen()
-            return {'Confirmation' : 'User is now deleted from the database.'}
+            return {'Confirmation' : 'Generation is now deleted from the database.'}
         else:
             #else inform the user of an error
-            abort(400, message = 'User with that ID not found in the database')
+            abort(400, message = 'Console with that ID not found in the database')
 
         

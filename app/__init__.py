@@ -14,8 +14,11 @@ migrate = Migrate(app, db)
 
 from models.gen_model import gen_Model
 from models.ygo_model import ygo_Model
+from models.signin_model import make_usr_model
 
 from resources.gen import bpgen as gen_bp
 app.register_blueprint(gen_bp)
 from resources.ygo import bpygo as ygo_bp
 app.register_blueprint(ygo_bp)
+from resources.signup import bpusr as usr_bp
+app.register_blueprint(usr_bp)
